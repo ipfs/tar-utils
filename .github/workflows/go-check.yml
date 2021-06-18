@@ -1,4 +1,5 @@
-# Taken from https://github.com/protocol/.github/
+# File managed by web3-bot. DO NOT EDIT.
+# See https://github.com/protocol/.github/ for details.
 
 on: [push, pull_request]
 name: Go Checks
@@ -46,3 +47,4 @@ jobs:
           run: |
             set -o pipefail
             staticcheck ./... | sed -e 's@\(.*\)\.go@./\1.go@g'
+
