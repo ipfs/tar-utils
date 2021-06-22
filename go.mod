@@ -1,3 +1,3 @@
-module github.com/whyrusleeping/tar-utils
+module github.com/ipfs/tar-utils
 
 go 1.14
