@@ -1,3 +1,5 @@
 module github.com/ipfs/tar-utils
 
-go 1.14
+go 1.15
+
+require github.com/stretchr/testify v1.7.0
