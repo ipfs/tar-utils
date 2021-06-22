@@ -83,6 +83,71 @@ func TestSingleDirectory(t *testing.T) {
 	)
 }
 
+func TestSingleDirectoryFollowSymlinkToNothing(t *testing.T) {
+	dirName := "dir"
+	childName := "child"
+
+	entries := []tarEntry{
+		&dirTarEntry{dirName},
+		&dirTarEntry{dirName + "/" + childName},
+	}
+
+	testTarExtraction(t, func(t *testing.T, rootDir string) {
+		target := fp.Join(rootDir, tarOutRoot)
+		if err := os.Symlink(fp.Join(target, "foo"), fp.Join(target, childName)); err != nil {
+			t.Fatal(err)
+		}
+	}, entries, nil,
+		os.ErrExist,
+	)
+}
+
+func TestSingleDirectoryFollowSymlinkToFile(t *testing.T) {
+	dirName := "dir"
+	childName := "child"
+
+	entries := []tarEntry{
+		&dirTarEntry{dirName},
+		&dirTarEntry{dirName + "/" + childName},
+	}
+
+	testTarExtraction(t, func(t *testing.T, rootDir string) {
+		target := fp.Join(rootDir, tarOutRoot)
+		symlinkTarget := fp.Join(target, "foo")
+		if err := ioutil.WriteFile(symlinkTarget, []byte("original data"), os.ModePerm); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.Symlink(symlinkTarget, fp.Join(target, childName)); err != nil {
+			t.Fatal(err)
+		}
+	}, entries, nil,
+		os.ErrExist,
+	)
+}
+
+func TestSingleDirectoryFollowSymlinkToDirectory(t *testing.T) {
+	dirName := "dir"
+	childName := "child"
+
+	entries := []tarEntry{
+		&dirTarEntry{dirName},
+		&dirTarEntry{dirName + "/" + childName},
+	}
+
+	testTarExtraction(t, func(t *testing.T, rootDir string) {
+		target := fp.Join(rootDir, tarOutRoot)
+		symlinkTarget := fp.Join(target, "foo")
+		if err := os.Mkdir(symlinkTarget, os.ModePerm); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.Symlink(symlinkTarget, fp.Join(target, childName)); err != nil {
+			t.Fatal(err)
+		}
+	}, entries, nil,
+		errExtractedDirToSymlink,
+	)
+}
+
 func TestSingleSymlink(t *testing.T) {
 	if !symlinksEnabled {
 		t.Skip("symlinks disabled on this platform", symlinksEnabledErr)

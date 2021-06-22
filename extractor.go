@@ -84,11 +84,6 @@ func (te *Extractor) Extract(reader io.Reader) error {
 		if err := te.extractDir(rootOutputPath); err != nil {
 			return err
 		}
-		if stat, err := os.Lstat(rootOutputPath); err != nil {
-			return err
-		} else if !stat.IsDir() {
-			return fmt.Errorf("cannot extract to symlink")
-		}
 	case tar.TypeReg, tar.TypeSymlink:
 		// Check if the output path already exists, so we know whether we should
 		// create our output with that name, or if we should put the output inside
@@ -250,8 +245,20 @@ func (te *Extractor) outputPath(basePlatformPath, relativeTarPath string) (strin
 	return platformPath, nil
 }
 
+var errExtractedDirToSymlink = errors.New("cannot extract to symlink")
+
 func (te *Extractor) extractDir(path string) error {
-	return os.MkdirAll(path, 0755)
+	err := os.MkdirAll(path, 0755)
+	if err != nil {
+		return err
+	}
+
+	if stat, err := os.Lstat(path); err != nil {
+		return err
+	} else if !stat.IsDir() {
+		return errExtractedDirToSymlink
+	}
+	return nil
 }
 
 func (te *Extractor) extractSymlink(path string, h *tar.Header) error {
