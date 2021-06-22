@@ -9,6 +9,7 @@ import (
 	"os"
 	fp "path/filepath"
 	"runtime"
+	"syscall"
 	"testing"
 	"time"
 
@@ -121,7 +122,7 @@ func TestDirectoryFollowSymlinkToFile(t *testing.T) {
 			t.Fatal(err)
 		}
 	}, entries, nil,
-		os.ErrExist,
+		syscall.ENOTDIR,
 	)
 }
 
