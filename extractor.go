@@ -23,8 +23,7 @@ var errInvalidRootMultipleRoots = fmt.Errorf("contains more than one root or the
 //
 // If the tar file contains a single file/symlink then it will try and extract it with semantics similar to Linux's
 // `cp`. In particular, the name of the extracted file/symlink will match the extraction path. If the extraction path
-// is a directory then it will extract into the directory using its original name, unless the name of the directory
-// matches the name of the file in which case it will try and replace the directory with the file/symlink or else fail.
+// is a directory then it will extract into the directory using its original name.
 //
 // Overwriting: Extraction of files and symlinks will result in overwriting the existing objects with the same name
 // when possible (i.e. other files, symlinks, and empty directories).
@@ -66,7 +65,6 @@ func (te *Extractor) Extract(reader io.Reader) error {
 	rootName := header.Name
 
 	// Get the platform-specific output path
-	// TODO: should we allow sanitization (here or anywhere)? No, let's break things and remove sanitization!
 	rootOutputPath := fp.Clean(te.Path)
 	if err := validatePlatformPath(rootOutputPath); err != nil {
 		return err
@@ -97,7 +95,7 @@ func (te *Extractor) Extract(reader io.Reader) error {
 		// a preexisting directory
 
 		rootIsExistingDirectory := false
-		// We are not follow links here
+		// We do not follow links here
 		if stat, err := os.Lstat(rootOutputPath); err != nil {
 			if !os.IsNotExist(err) {
 				return err
@@ -142,7 +140,7 @@ func (te *Extractor) Extract(reader io.Reader) error {
 
 		// Make sure that we only have a single root element
 		if !firstObjectWasDir {
-			return fmt.Errorf("the root was not a directory and the tar has multiple entries : %w", errInvalidRoot)
+			return fmt.Errorf("the root was not a directory and the tar has multiple entries: %w", errInvalidRoot)
 		}
 
 		// validate the path to remove paths we refuse to work with and make it easier to reason about
@@ -251,7 +249,7 @@ func (te *Extractor) outputPath(basePlatformPath, relativeTarPath string) (strin
 			return "", errTraverseSymlink
 		}
 		if !fi.Mode().IsDir() {
-			return "", fmt.Errorf("cannot traverse non-directory objects")
+			return "", errors.New("cannot traverse non-directory objects")
 		}
 	}
 
