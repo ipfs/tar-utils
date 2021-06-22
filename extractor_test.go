@@ -83,7 +83,7 @@ func TestSingleDirectory(t *testing.T) {
 	)
 }
 
-func TestSingleDirectoryFollowSymlinkToNothing(t *testing.T) {
+func TestDirectoryFollowSymlinkToNothing(t *testing.T) {
 	dirName := "dir"
 	childName := "child"
 
@@ -102,7 +102,7 @@ func TestSingleDirectoryFollowSymlinkToNothing(t *testing.T) {
 	)
 }
 
-func TestSingleDirectoryFollowSymlinkToFile(t *testing.T) {
+func TestDirectoryFollowSymlinkToFile(t *testing.T) {
 	dirName := "dir"
 	childName := "child"
 
@@ -125,7 +125,7 @@ func TestSingleDirectoryFollowSymlinkToFile(t *testing.T) {
 	)
 }
 
-func TestSingleDirectoryFollowSymlinkToDirectory(t *testing.T) {
+func TestDirectoryFollowSymlinkToDirectory(t *testing.T) {
 	dirName := "dir"
 	childName := "child"
 
