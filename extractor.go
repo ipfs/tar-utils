@@ -210,12 +210,6 @@ func validateTarPath(tarPath string) error {
 // getRelativePath returns the relative path between rootTarPath and tarPath. Assumes both paths have been cleaned.
 // Will error if the tarPath is not below the rootTarPath.
 func getRelativePath(rootName, tarPath string) (string, error) {
-	pathElems := strings.Split(tarPath, "/")
-
-	if len(pathElems) <= 1 {
-		return "", errInvalidRootMultipleRoots
-	}
-
 	if !strings.HasPrefix(tarPath, rootName+"/") {
 		return "", errInvalidRootMultipleRoots
 	}
